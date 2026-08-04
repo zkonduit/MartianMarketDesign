@@ -66,21 +66,21 @@ quantity-only notation keeps the model readable.
 For each participant, the proposal produces an incoming and an outgoing bundle:
 
 $$
-\operatorname{in}_{p k}(X) = \sum_{q \in P} x_{q p k},
+\mathrm{in}_{p k}(X) = \sum_{q \in P} x_{q p k},
 \qquad
-\operatorname{out}_{p k}(X) = \sum_{q \in P} x_{p q k}.
+\mathrm{out}_{p k}(X) = \sum_{q \in P} x_{p q k}.
 $$
 
 The declarations factor into the proposal as follows:
 
 - **Offers bound outgoing transfers.** If $o_{p k}$ is the available quantity of
   type $k$ in $O_p$, then
-  $\operatorname{out}_{p k}(X) \le o_{p k}$. The proposed transfer must also
+  $\mathrm{out}_{p k}(X) \le o_{p k}$. The proposed transfer must also
   match the offer's quality, timing, location, and other terms. The cost or
   inconvenience of supplying the outgoing bundle reduces $U_p$.
 - **Wants evaluate incoming bundles.** $W_p$ describes desired items,
   acceptable substitutes, target quantities, and relative preferences. It
-  determines how $\operatorname{in}_p(X)$ contributes to $U_p$. A want may
+  determines how $\mathrm{in}_p(X)$ contributes to $U_p$. A want may
   therefore be soft: receiving less than the target can still have value.
 - **Constraints reject invalid bundles.** $C_p$ is a predicate over the whole
   proposal, not just one item. It can require a minimum incoming quantity, cap
@@ -118,15 +118,15 @@ all participants' declarations:
 
 $$
 \mathcal{F}_{\mathrm{clear}}(O, W, C;H_t) =
-\left\{
-X \;\middle|\;
+\{
+X \mid
 \begin{array}{l}
-\operatorname{out}_p(X) \text{ is covered by } O_p,\\
+\mathrm{out}_p(X) \text{ is covered by } O_p,\\
 C_p(X) = \mathrm{true},\\
 \Delta U_p(X; O_p, W_p,H_t) - \lambda_p R_p(X;H_t) \ge \tau_p
 \end{array}
 \text{ for every } p \in P
-\right\}.
+\}.
 $$
 
 Candidate generation uses $O$ and $W$ to create plausible transfer edges.
@@ -140,12 +140,12 @@ The matching engine can search for a proposal such as:
 $$
 X^*_{\mathrm{clear}} =
 \underset{X \in \mathcal{F}_{\mathrm{clear}}(O,W,C;H_t)}
-{\operatorname{argmax}}
-\left[
+{\mathrm{argmax}}
+[
 \sum_{p \in P} w_p \Delta U_p(X; O_p, W_p,H_t)
 - \lambda R(X;H_t)
 - \mu \kappa(X)
-\right],
+],
 $$
 
 where $R(X;H_t)$ aggregates proposal-level settlement risk and $\kappa(X)$
@@ -192,9 +192,9 @@ to act for the participants.
 Let the affected participants be:
 
 $$
-P(X) = \left\{p \in P \mid
+P(X) = \{p \in P \mid
 \exists q \in P, k \in K:\; x_{p q k} + x_{q p k} > 0
-\right\}.
+\}.
 $$
 
 Each participant may sign a delegation policy $\Gamma_p$ that names an agent or
@@ -213,14 +213,14 @@ For either a clearing proposal $X$ or a credit proposal $Q$, write the proposal
 generically as $Y$. Authorization for participant $p$ is:
 
 $$
-\operatorname{Authorized}_p(Y) =
-\operatorname{ValidSignature}_p(c_Y)
+\mathrm{Authorized}_p(Y) =
+\mathrm{ValidSignature}_p(c_Y)
 \;\lor\;
-\left(
-\operatorname{ValidDelegation}(\Gamma_p)
-\land \operatorname{ValidDelegateSignature}_{\Gamma_p}(c_Y)
+(
+\mathrm{ValidDelegation}(\Gamma_p)
+\land \mathrm{ValidDelegateSignature}_{\Gamma_p}(c_Y)
 \land \Gamma_p(Y) = \mathrm{true}
-\right),
+),
 $$
 
 where $c_Y$ is the commitment to the exact proposal, including settlement terms.
@@ -228,8 +228,8 @@ The executable clearing space is:
 
 $$
 \mathcal{F}^{\mathrm{exec}}_{\mathrm{clear}}
-= \left\{X \in \mathcal{F}_{\mathrm{clear}}
-\mid \operatorname{Authorized}_p(X) \text{ for every } p \in P(X)\right\}.
+= \{X \in \mathcal{F}_{\mathrm{clear}}
+\mid \mathrm{Authorized}_p(X) \text{ for every } p \in P(X)\}.
 $$
 
 If no applicable delegation exists, the proposal remains pending until every
@@ -250,8 +250,8 @@ latent embedding or acceptance score.
 Let the authoritative credit-ledger state at time $t$ be:
 
 $$
-L_t = \left(b(t), \ell(t), u(t), \rho(t), N_t,
-\text{unit}, \text{policy version}\right),
+L_t = (b(t), \ell(t), u(t), \rho(t), N_t,
+\text{unit}, \text{policy version}),
 $$
 
 where:
@@ -337,7 +337,7 @@ individually rational only when:
 
 $$
 \Delta U_p(X; O_p, W_p,H_t)
-+ V_p\!\left(b_p(t+1)\right) - V_p\!\left(b_p(t)\right)
++ V_p\!(b_p(t+1)) - V_p\!(b_p(t))
 - \lambda_p R_p(Q,L_t,H_t)
 \ge \tau_p.
 $$
@@ -352,10 +352,10 @@ settlement terms:
 
 $$
 \mathcal{F}_{\mathrm{credit}}(O,W,C;L_t,H_t)
-= \left\{
-Q=(X,A,T) \;\middle|\;
+= \{
+Q=(X,A,T) \mid
 \begin{array}{l}
-\operatorname{out}_p(X) \text{ is covered by } O_p,\\
+\mathrm{out}_p(X) \text{ is covered by } O_p,\\
 C_p(Q)=\mathrm{true},\\
 \sum_p \Delta b_p(Q)=0,\\
 b_p(t)+\Delta b_p(Q)-\rho_p(t) \ge -\ell_p(t),\\
@@ -365,7 +365,7 @@ b_p(t)+\Delta b_p(Q) \le u_p(t),\\
 T \text{ is valid under the current ledger policy}
 \end{array}
 \text{ for every } p \in P(Q)
-\right\}.
+\}.
 $$
 
 Here $C_p(Q)$ extends the original constraints to credit terms such as the unit,
@@ -384,12 +384,12 @@ as:
 $$
 Q^*_{\mathrm{credit}} =
 \underset{Q \in \mathcal{F}_{\mathrm{credit}}(O,W,C;L_t,H_t)}
-{\operatorname{argmax}}
-\left[
+{\mathrm{argmax}}
+[
 \sum_{p \in P(Q)} w_p S_p(Q;L_t,H_t)
 - \mu \kappa(Q)
 - \eta G(L_{t+1})
-\right],
+],
 $$
 
 where $\kappa(Q)$ measures operational complexity and $G(L_{t+1})$ penalizes
@@ -399,8 +399,8 @@ authority to execute it. The executable space remains smaller:
 
 $$
 \mathcal{F}^{\mathrm{exec}}_{\mathrm{credit}}
-= \left\{Q \in \mathcal{F}_{\mathrm{credit}}(O,W,C;L_t,H_t)
-\mid \operatorname{Authorized}_p(Q) \text{ for every } p \in P(Q)\right\}.
+= \{Q \in \mathcal{F}_{\mathrm{credit}}(O,W,C;L_t,H_t)
+\mid \mathrm{Authorized}_p(Q) \text{ for every } p \in P(Q)\}.
 $$
 
 A delegation that permits direct clearing does not automatically permit an
@@ -559,12 +559,12 @@ commitment. Only information relevant and permitted for the current exchange
 context should enter $U_p$, $R_p$, or a constraint.
 
 Raw evidence may remain encrypted off-chain. Let $e_j$ be the canonical encoding
-of event $j$ and $c^H_j=\operatorname{Commit}(e_j;r_j)$ its commitment. The
+of event $j$ and $c^H_j=\mathrm{Commit}(e_j;r_j)$ its commitment. The
 historical state can be represented by a versioned root:
 
 $$
-\operatorname{root}_H(t) =
-\operatorname{MerkleRoot}\!\left(\{c^H_j \mid e_j \text{ is recorded by }t\}\right).
+\mathrm{root}_H(t) =
+\mathrm{MerkleRoot}\!(\{c^H_j \mid e_j \text{ is recorded by }t\}).
 $$
 
 Committed events should be append-only, but their interpretation need not be.
@@ -597,10 +597,10 @@ History can affect a proposal in four separate places:
 A proposal-level model may estimate:
 
 $$
-\pi(X;H_t) = \Pr\!\left(
+\pi(X;H_t) = \Pr\!(
 \text{all required approvals and deliveries complete}
 \mid X,H_t
-\right).
+).
 $$
 
 Low $\pi$ may reduce expected utility, increase risk, cause the matcher to seek
@@ -631,14 +631,14 @@ to a public blockchain. Instead, a participant can encode an intent using a
 versioned canonical schema:
 
 $$
-I_p = \operatorname{Encode}(O_p, W_p, C_p, \text{nonce}, \text{expiry},
+I_p = \mathrm{Encode}(O_p, W_p, C_p, \text{nonce}, \text{expiry},
 \text{schema version})
 $$
 
 and publish a randomized commitment:
 
 $$
-c_p = \operatorname{Commit}(I_p; r_p).
+c_p = \mathrm{Commit}(I_p; r_p).
 $$
 
 The commitment is **binding**, so the participant cannot later substitute a
@@ -654,7 +654,7 @@ had sufficient quantity, was unexpired, or satisfied a policy—without revealin
 the rest of the intent.
 
 Historical proofs can use the same pattern. A participant might prove that the
-active records under $\operatorname{root}_H(t)$ contain at least a threshold
+active records under $\mathrm{root}_H(t)$ contain at least a threshold
 number of confirmed, on-time outcomes in a relevant category, that no finalized
 default is present in a stated time window, or that a published risk band was
 computed by an agreed model. The public predicate should reveal no more than the
@@ -665,13 +665,13 @@ favourable records or use an obsolete scoring rule.
 A matching proof could expose only the public statement:
 
 $$
-\operatorname{VerifyMatch}
+\mathrm{VerifyMatch}
 (\text{intent root}, \text{history root}, \text{ledger root},
 \text{matcher ID}, c_Y, \text{epoch}) = \mathrm{true},
 $$
 
 where $Y$ is either a clearing proposal $X$ or a credit proposal $Q$, and
-$c_Y = \operatorname{Commit}(Y; r_Y)$ is its randomized commitment. A clearing
+$c_Y = \mathrm{Commit}(Y; r_Y)$ is its randomized commitment. A clearing
 proposal uses a distinguished null ledger root. The proof uses the intents,
 commitment randomness, permitted historical records, and any private ledger
 openings as witness data. For a deterministic matching function $M$, it should
@@ -963,8 +963,8 @@ The model uses the following conventions:
 | --- | --- |
 | $X$ | Clearing proposal: a set of directed real-asset or service transfers. |
 | $x_{p q k}$ | Quantity of type $k$ transferred from $p$ to $q$ in $X$. |
-| $\operatorname{in}_{p k}(X)$ | Total quantity of type $k$ that $p$ receives under $X$. |
-| $\operatorname{out}_{p k}(X)$ | Total quantity of type $k$ that $p$ provides under $X$. |
+| $\mathrm{in}_{p k}(X)$ | Total quantity of type $k$ that $p$ receives under $X$. |
+| $\mathrm{out}_{p k}(X)$ | Total quantity of type $k$ that $p$ provides under $X$. |
 | $P(X)$ | Participants affected by at least one transfer in $X$. |
 | $\mathcal{F}_{\mathrm{clear}}(O,W,C;H_t)$ | Feasible and individually rational clearing-proposal space. |
 | $X^*_{\mathrm{clear}}$ | Highest-ranked clearing proposal under the stated objective. |
@@ -974,7 +974,7 @@ The model uses the following conventions:
 | $Y$ | Generic proposal variable: either clearing proposal $X$ or credit proposal $Q$. |
 | $\Gamma_p$ | Signed delegation policy defining what an agent or matcher may approve for $p$. |
 | $c_Y$ | Randomized commitment to the exact generic proposal $Y$ and its settlement terms. |
-| $\operatorname{Authorized}_p(Y)$ | Predicate that is true when $p$ or a valid in-scope delegate has approved $c_Y$. |
+| $\mathrm{Authorized}_p(Y)$ | Predicate that is true when $p$ or a valid in-scope delegate has approved $c_Y$. |
 | $\mathcal{F}^{\mathrm{exec}}_{\mathrm{clear}}$ | Clearing proposals that are feasible and authorized by every affected participant. |
 
 ### Mutual credit
@@ -1022,17 +1022,17 @@ governing limits, defaults, fees, and settlement.
 | $r_p,r_j,r_Y$ | Fresh secret randomness used respectively for intent, historical-event, and proposal commitments. |
 | $c_p$ | Commitment to participant $p$'s private intent $I_p$. |
 | $c^H_j$ | Commitment to historical event $e_j$. |
-| $\operatorname{root}_H(t)$ | Versioned Merkle root committing to recorded historical events by time $t$. |
-| $\operatorname{Encode}(\cdot)$ | Canonical, versioned serialization used before committing to structured data. |
-| $\operatorname{Commit}(m;r)$ | Hiding and binding commitment to message $m$ using randomness $r$. |
-| $\operatorname{MerkleRoot}(\cdot)$ | Function that batches commitments into a single authenticated root. |
+| $\mathrm{root}_H(t)$ | Versioned Merkle root committing to recorded historical events by time $t$. |
+| $\mathrm{Encode}(\cdot)$ | Canonical, versioned serialization used before committing to structured data. |
+| $\mathrm{Commit}(m;r)$ | Hiding and binding commitment to message $m$ using randomness $r$. |
+| $\mathrm{MerkleRoot}(\cdot)$ | Function that batches commitments into a single authenticated root. |
 | $M$ | Versioned deterministic matching or validation program whose execution may be proven. |
-| $\operatorname{ValidSignature}_p(c_Y)$ | Predicate verifying that participant $p$ signed proposal commitment $c_Y$. |
-| $\operatorname{ValidDelegation}(\Gamma_p)$ | Predicate verifying that $p$'s delegation exists, is current, and is not revoked. |
-| $\operatorname{ValidDelegateSignature}_{\Gamma_p}(c_Y)$ | Predicate verifying the named delegate's approval of $c_Y$. |
-| $\operatorname{VerifyMatch}(\cdot)$ | Public verification statement linking state roots, matcher version, epoch, and proposal commitment. |
+| $\mathrm{ValidSignature}_p(c_Y)$ | Predicate verifying that participant $p$ signed proposal commitment $c_Y$. |
+| $\mathrm{ValidDelegation}(\Gamma_p)$ | Predicate verifying that $p$'s delegation exists, is current, and is not revoked. |
+| $\mathrm{ValidDelegateSignature}_{\Gamma_p}(c_Y)$ | Predicate verifying the named delegate's approval of $c_Y$. |
+| $\mathrm{VerifyMatch}(\cdot)$ | Public verification statement linking state roots, matcher version, epoch, and proposal commitment. |
 | $\text{intent root}$ | Public root committing to the active batch of private intents. |
-| $\text{history root}$ | Public historical-state root; normally $\operatorname{root}_H(t)$. |
+| $\text{history root}$ | Public historical-state root; normally $\mathrm{root}_H(t)$. |
 | $\text{ledger root}$ | Public commitment to $L_t$, or a distinguished null value for a clearing proposal. |
 | $\text{matcher ID}$ | Hash or identifier of the exact matching or validation program and configuration. |
 | $\text{epoch}$ | Bounded validity period in which the proof and referenced roots may be used. |
