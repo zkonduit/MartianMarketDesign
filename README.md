@@ -54,9 +54,9 @@ Each participant `p` declares:
 
 An exchange proposal is a set of directed transfers:
 
-$$
+```math
 X = \{x_{p q k}\},
-$$
+```
 
 where $x_{p q k} \ge 0$ is the quantity of item or service $k$ transferred from
 participant $p$ to participant $q$. In practice, a transfer also needs terms
@@ -65,11 +65,11 @@ quantity-only notation keeps the model readable.
 
 For each participant, the proposal produces an incoming and an outgoing bundle:
 
-$$
+```math
 \mathrm{in}_{p k}(X) = \sum_{q \in P} x_{q p k},
 \qquad
 \mathrm{out}_{p k}(X) = \sum_{q \in P} x_{p q k}.
-$$
+```
 
 The declarations factor into the proposal as follows:
 
@@ -102,9 +102,9 @@ A proposal is **feasible** only if every outgoing transfer is covered by an
 offer and all inventory, capacity, timing, and policy constraints hold. It is
 **individually rational** for participant $p$ when:
 
-$$
+```math
 \Delta U_p(X; O_p, W_p, H_t) - \lambda_p R_p(X;H_t) \ge \tau_p,
-$$
+```
 
 where $\Delta U_p(X; O_p, W_p, H_t)$ is the expected value of the incoming
 bundle minus the cost of the outgoing bundle, relative to not trading;
@@ -116,7 +116,7 @@ same counterparty and proposal.
 For exchange clearing, this yields a proposal space that depends directly on
 all participants' declarations:
 
-$$
+```math
 \mathcal{F}_{\mathrm{clear}}(O, W, C;H_t) =
 \{
 X \mid
@@ -127,7 +127,7 @@ C_p(X) = \mathrm{true},\\
 \end{array}
 \text{ for every } p \in P
 \}.
-$$
+```
 
 Candidate generation uses $O$ and $W$ to create plausible transfer edges.
 History-conditioned acceptance and delivery estimates can prioritize which
@@ -137,7 +137,7 @@ and ranks them by history-conditioned utility, risk, and operational complexity.
 
 The matching engine can search for a proposal such as:
 
-$$
+```math
 X^*_{\mathrm{clear}} =
 \underset{X \in \mathcal{F}_{\mathrm{clear}}(O,W,C;H_t)}
 {\mathrm{argmax}}
@@ -146,7 +146,7 @@ X^*_{\mathrm{clear}} =
 - \lambda R(X;H_t)
 - \mu \kappa(X)
 ],
-$$
+```
 
 where $R(X;H_t)$ aggregates proposal-level settlement risk and $\kappa(X)$
 penalizes operational complexity. Historical estimates should carry sample size,
@@ -165,10 +165,10 @@ and the relevant, permitted view of $H_p(t)$, together with an embedding $z_k$
 for each offer or want. These representations can help retrieve compatible
 candidates from a large network. A separate, calibrated model can estimate:
 
-$$
+```math
 s_{p q}(X) = \Pr(\text{participant } p \text{ accepts and } q \text{ delivers}
 \mid X, H_{p q}(t), H_p(t), H_q(t)),
-$$
+```
 
 The estimate can affect candidate retrieval, $U_p$, and $R_p$, but it remains a
 matching signal rather than a price, balance, or transferable currency. It must
@@ -191,11 +191,11 @@ to act for the participants.
 
 Let the affected participants be:
 
-$$
+```math
 P(X) = \{p \in P \mid
 \exists q \in P, k \in K:\; x_{p q k} + x_{q p k} > 0
 \}.
-$$
+```
 
 Each participant may sign a delegation policy $\Gamma_p$ that names an agent or
 matching engine and defines exactly which proposals it may approve. A useful
@@ -212,7 +212,7 @@ delegation includes:
 For either a clearing proposal $X$ or a credit proposal $Q$, write the proposal
 generically as $Y$. Authorization for participant $p$ is:
 
-$$
+```math
 \mathrm{Authorized}_p(Y) =
 \mathrm{ValidSignature}_p(c_Y)
 \;\lor\;
@@ -221,16 +221,16 @@ $$
 \land \mathrm{ValidDelegateSignature}_{\Gamma_p}(c_Y)
 \land \Gamma_p(Y) = \mathrm{true}
 ),
-$$
+```
 
 where $c_Y$ is the commitment to the exact proposal, including settlement terms.
 The executable clearing space is:
 
-$$
+```math
 \mathcal{F}^{\mathrm{exec}}_{\mathrm{clear}}
 = \{X \in \mathcal{F}_{\mathrm{clear}}
 \mid \mathrm{Authorized}_p(X) \text{ for every } p \in P(X)\}.
-$$
+```
 
 If no applicable delegation exists, the proposal remains pending until every
 affected participant explicitly approves it. Silence is not approval. If one
@@ -249,10 +249,10 @@ latent embedding or acceptance score.
 
 Let the authoritative credit-ledger state at time $t$ be:
 
-$$
+```math
 L_t = (b(t), \ell(t), u(t), \rho(t), N_t,
 \text{unit}, \text{policy version}),
-$$
+```
 
 where:
 
@@ -287,9 +287,9 @@ transition; it cannot be smuggled into the proposal that spends the new capacity
 A mutual-credit proposal must contain both real transfers and their agreed
 credit accounting:
 
-$$
+```math
 Q = (X, A, T),
-$$
+```
 
 where $X$ is the transfer set; $A = \{a_{p q j}\}$ is a set of non-negative,
 directed credit entries; and $T$ specifies reservation, delivery, finalization,
@@ -302,11 +302,11 @@ a binding price from the latent vectors and impose it unilaterally.
 For a transfer from $p$ to $q$, the provider $p$ earns credit and the receiver
 $q$ incurs an equal debit. The proposed balance change is:
 
-$$
+```math
 \Delta b_p(Q) =
 \sum_{q \in P, j \in J(Q)} a_{p q j}
 - \sum_{q \in P, j \in J(Q)} a_{q p j}.
-$$
+```
 
 The affected set is
 $P(Q)=\{p \mid p \in P(X) \text{ or } \Delta b_p(Q) \ne 0\}$. System accounts
@@ -316,11 +316,11 @@ approval.
 
 Consequently:
 
-$$
+```math
 \sum_{p \in P} \Delta b_p(Q) = 0,
 \qquad
 b_p(t+1) = b_p(t) + \Delta b_p(Q).
-$$
+```
 
 If balances begin with $\sum_p b_p(0)=0$, every valid transition preserves
 $\sum_p b_p(t)=0$. Each unit of account requires a separate conserved ledger;
@@ -335,12 +335,12 @@ Credit changes the participant's utility calculation. Let $V_p(b)$ represent
 the value—or expected burden—to $p$ of holding balance $b$. A credit proposal is
 individually rational only when:
 
-$$
+```math
 \Delta U_p(X; O_p, W_p,H_t)
-+ V_p\!(b_p(t+1)) - V_p\!(b_p(t))
++ V_p(b_p(t+1)) - V_p(b_p(t))
 - \lambda_p R_p(Q,L_t,H_t)
 \ge \tau_p.
-$$
+```
 
 The risk term now includes not only delivery risk but also the chance that
 positive credit cannot later be spent, counterparties default, governance
@@ -350,7 +350,7 @@ The feasible mutual-credit proposal space extends
 $\mathcal{F}_{\mathrm{clear}}(O,W,C;H_t)$ with credit entries, ledger state, and
 settlement terms:
 
-$$
+```math
 \mathcal{F}_{\mathrm{credit}}(O,W,C;L_t,H_t)
 = \{
 Q=(X,A,T) \mid
@@ -366,7 +366,7 @@ T \text{ is valid under the current ledger policy}
 \end{array}
 \text{ for every } p \in P(Q)
 \}.
-$$
+```
 
 Here $C_p(Q)$ extends the original constraints to credit terms such as the unit,
 maximum debit, minimum credit received, acceptable pricing range, repayment
@@ -381,7 +381,7 @@ $S_p(Q;L_t,H_t)$, participant $p$'s history-conditioned, credit-adjusted
 surplus. The matcher may rank feasible credit proposals with an objective such
 as:
 
-$$
+```math
 Q^*_{\mathrm{credit}} =
 \underset{Q \in \mathcal{F}_{\mathrm{credit}}(O,W,C;L_t,H_t)}
 {\mathrm{argmax}}
@@ -390,18 +390,18 @@ Q^*_{\mathrm{credit}} =
 - \mu \kappa(Q)
 - \eta G(L_{t+1})
 ],
-$$
+```
 
 where $\kappa(Q)$ measures operational complexity and $G(L_{t+1})$ penalizes
 systemic risks such as concentrated positive claims, correlated debt, or poor
 liquidity. As with clearing, this ranking chooses a proposal; it grants no
 authority to execute it. The executable space remains smaller:
 
-$$
+```math
 \mathcal{F}^{\mathrm{exec}}_{\mathrm{credit}}
 = \{Q \in \mathcal{F}_{\mathrm{credit}}(O,W,C;L_t,H_t)
 \mid \mathrm{Authorized}_p(Q) \text{ for every } p \in P(Q)\}.
-$$
+```
 
 A delegation that permits direct clearing does not automatically permit an
 agent to incur debt. Credit delegation should separately limit the most negative
@@ -562,10 +562,10 @@ Raw evidence may remain encrypted off-chain. Let $e_j$ be the canonical encoding
 of event $j$ and $c^H_j=\mathrm{Commit}(e_j;r_j)$ its commitment. The
 historical state can be represented by a versioned root:
 
-$$
+```math
 \mathrm{root}_H(t) =
-\mathrm{MerkleRoot}\!(\{c^H_j \mid e_j \text{ is recorded by }t\}).
-$$
+\mathrm{MerkleRoot}(\{c^H_j \mid e_j \text{ is recorded by }t\}).
+```
 
 Committed events should be append-only, but their interpretation need not be.
 Corrections, appeals, and dispute decisions add superseding events. The active
@@ -596,12 +596,12 @@ History can affect a proposal in four separate places:
 
 A proposal-level model may estimate:
 
-$$
-\pi(X;H_t) = \Pr\!(
+```math
+\pi(X;H_t) = \Pr(
 \text{all required approvals and deliveries complete}
 \mid X,H_t
 ).
-$$
+```
 
 Low $\pi$ may reduce expected utility, increase risk, cause the matcher to seek
 collateral or staged settlement, or lower the proposal's rank. It should not be
@@ -630,16 +630,16 @@ Raw offers, wants, constraints, identities, and histories should not be written
 to a public blockchain. Instead, a participant can encode an intent using a
 versioned canonical schema:
 
-$$
+```math
 I_p = \mathrm{Encode}(O_p, W_p, C_p, \text{nonce}, \text{expiry},
 \text{schema version})
-$$
+```
 
 and publish a randomized commitment:
 
-$$
+```math
 c_p = \mathrm{Commit}(I_p; r_p).
-$$
+```
 
 The commitment is **binding**, so the participant cannot later substitute a
 different intent, and **hiding**, so an observer cannot recover the intent. A
@@ -664,11 +664,11 @@ favourable records or use an obsolete scoring rule.
 
 A matching proof could expose only the public statement:
 
-$$
+```math
 \mathrm{VerifyMatch}
 (\text{intent root}, \text{history root}, \text{ledger root},
 \text{matcher ID}, c_Y, \text{epoch}) = \mathrm{true},
-$$
+```
 
 where $Y$ is either a clearing proposal $X$ or a credit proposal $Q$, and
 $c_Y = \mathrm{Commit}(Y; r_Y)$ is its randomized commitment. A clearing
@@ -883,12 +883,6 @@ Add credit only after clearing, authorization, and settlement are stable:
     Theory of Value: The False Coin of Our Own Dreams* (2001) develops related
     arguments about value and exchange.
 
-[^risc-zero]: [RISC Zero zkVM documentation](https://dev.risczero.com/) and
-    [protocol overview](https://github.com/risc0/risc0#protocol-overview-and-terminology).
-
-[^sp1]: [SP1 documentation](https://docs.succinct.xyz/docs/sp1/introduction),
-    including its RISC-V zkVM and on-chain verification guides.
-
 [^ezkl]: [EZKL documentation](https://docs.ezkl.xyz/) and [proof-verification
     lifecycle](https://docs.ezkl.xyz/getting-started/verify/).
 
@@ -1006,9 +1000,9 @@ The model uses the following conventions:
 
 The credit-ledger tuple is:
 
-$$
+```math
 L_t=(b(t),\ell(t),u(t),\rho(t),N_t,\text{unit},\text{policy version}).
-$$
+```
 
 It packages the credit variables with the unit of account and the rules
 governing limits, defaults, fees, and settlement.
