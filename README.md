@@ -6,10 +6,6 @@ what they want, and the conditions under which they would trade. A matching
 engine can then propose bilateral swaps, multilateral cycles, or bundles that
 each participant may accept or reject.
 
-The central idea is that exchange value is contextual. It depends not only on an
-asset and its quantity, but also on timing, preferences, trust, delivery risk,
-utility, and the alternatives available to each participant. Given the rise of AI agents,
-it becomes feasible to represent such intents at scale.
 
 ## Motivation
 
@@ -323,13 +319,14 @@ b_p(t+1) = b_p(t) + \Delta b_p(Q).
 ```
 
 If balances begin with $\sum_p b_p(0)=0$, every valid transition preserves
-$\sum_p b_p(t)=0$. Each unit of account requires a separate conserved ledger;
-balances denominated in different units cannot be added together.
+$\sum_p b_p(t)=0$.
+Each unit of account requires a separate conserved ledger.
+Balances denominated in different units cannot be added together.
 
-Credit is therefore formed as a matched debit-credit pair. The matcher does not
-mint an unbacked positive balance. Fees, reserves, insurance pools, or write-offs
-must appear as explicit system accounts so that the conservation rule remains
-auditable.
+Credit is therefore formed as a matched debit-credit pair.
+The matcher does not mint an unbacked positive balance.
+Fees, reserves, insurance pools, or write-offs
+must appear as explicit system accounts so that the conservation rule remains auditable.
 
 Credit changes the participant's utility calculation. Let $V_p(b)$ represent
 the value—or expected burden—to $p$ of holding balance $b$. A credit proposal is
@@ -357,7 +354,7 @@ Q=(X,A,T) \mid
 \begin{array}{l}
 \mathrm{out}_p(X) \text{ is covered by } O_p,\\
 C_p(Q)=\mathrm{true},\\
-\sum_p \Delta b_p(Q)=0,\\
+\sum_p \Delta b_p(Q) = 0,\\
 b_p(t)+\Delta b_p(Q)-\rho_p(t) \ge -\ell_p(t),\\
 b_p(t)+\Delta b_p(Q) \le u_p(t),\\
 \Delta U_p(X;O_p,W_p,H_t)+V_p(b_p(t+1))-V_p(b_p(t))\\
@@ -477,12 +474,12 @@ When a negative balance defaults, deleting only that debt would break the
 zero-sum invariant and leave positive balances unsupported. A pre-agreed default
 transition should therefore:
 
-1. freeze the defaulter's unused credit line and pending proposals;
-2. apply posted collateral, guarantor commitments, or a funded loss reserve;
+1. freeze the defaulter's unused credit line and pending proposals
+2. apply posted collateral, guarantor commitments, or a funded loss reserve
 3. allocate any remaining shortfall according to an explicit rule—for example,
    a member assessment or proportional reduction of positive claims;
 4. record balanced entries between the defaulted account and the accounts that
-   absorb the loss; and
+   absorb the loss, and
 5. retain evidence, appeal deadlines, and governance authorization for the
    write-off.
 
@@ -490,6 +487,247 @@ Voluntary exit should normally require a zero balance, no open reservations, and
 no unresolved disputes. Transferring a non-zero balance to another participant
 is a novation: the receiving party and the ledger policy must explicitly accept
 the transferred claim or obligation.
+
+## Non-scalar Mutual Credit
+
+The scalar balance $b_p$ assumes that every accepted credit claim in the same
+unit is fungible: after valuation, only the participant's net quantity matters
+for future settlement. That assumption is convenient, but it can erase
+information that remains material to what the participant may lawfully redeem,
+must repay, may transfer on exit, or loses after a default.
+
+Labour provides an important historical example of this scalarization problem.
+Marx argued that commodity value is determined by socially necessary labour
+time and described skilled labour as "multiplied" simple labour, with the
+reduction between heterogeneous kinds of labour established through a social
+process.[^marx-capital] This is more qualified than saying that every literal
+hour of work has equal value as Marx's measure depends on normal production
+conditions and average skill and intensity. In the *Critique of the Gotha
+Programme*, he also considered labour certificates that permit a worker to draw
+from the social stock according to labour contributed, while emphasizing the
+limitations and inequalities of such an arrangement.[^marx-gotha]
+
+For ledger design, the flaw in this reduction is not that labour time is
+irrelevant. It is the assumption that one social scalar unit can stand in for the
+settlement semantics of heterogeneous concrete obligations.
+
+Nevertheless, reducing heterogeneous concrete labour to one quantity of
+abstract labour requires a scalar conversion that is contested and may be
+inadequate as protocol accounting. The treatment of heterogeneous labour is a
+recognized problem in formal critiques and reformulations of Marxian value
+theory.[^heterogeneous-labour] Time banks implement an even stronger operational
+rule when they value different services equally per hour.
+Empirical research
+has found that this "equal time, equal value" principle creates tension between
+participants with different motivations.[^unequal-time].
+A stronger protocol may need to capture
+unique and non-fungible outstanding claims
+that a scalar value might conceal.
+
+Offers, wants, utility, and risk can represent why a participant would accept a
+typed claim.
+However, they may be insufficient in providing more
+information about the nature of that claim.
+Where a claim might affect future settlement right,
+we need to consider a multidimensional $b$ value
+A proposed dimension belongs in
+the balance state only when deleting it would change a future settlement right
+or obligation. A useful sufficiency test is:
+
+> Can two ledger states have the same scalar balance but different lawful
+> redemption, repayment, exit, or default outcomes?
+
+If the answer is yes, the scalar balance is not a sufficient statistic for the
+credit position.
+If a feature changes only willingness to trade, expected
+value, available capacity, or probability of failure, it belongs instead in
+$O$, $W$, $C$, $U$, $R$, or the credit limits.
+
+### Typed time-bank obligations
+
+Suppose Alice provides ten hours of childcare to Bob, so Alice acquires a
+childcare claim and Bob incurs the corresponding obligation. Chen then provides
+Alice with ten hours of transport. If the protocol converts every service hour
+to one scalar credit, Alice's two entries cancel and $b_{\mathrm{Alice}}=0$.
+The scalar ledger could therefore treat Alice as having no position and permit
+her to exit.
+
+Her typed position is instead:
+
+```math
+B_{\mathrm{Alice}}
+=
+(+10\ \text{childcare-hours},
+ -10\ \text{transport-hours}).
+```
+
+The network still owes Alice childcare value, and Alice still owes the network
+transport value. These positions should cancel only if an authorized policy or
+exchange makes those services convertible. Bob has the matching negative
+childcare position and Chen has the matching positive transport position, so
+each coordinate remains conserved across the network.
+
+Alice's offers and wants may change later, and her utility can value childcare
+and transport differently. Neither operation should retrospectively alter the
+settled claim. Keeping the service type in the authoritative balance prevents a
+nominally zero account from abandoning a real obligation and avoids promising
+that scarce and abundant skills are redeemable at an imposed hour rate.
+
+### Time and location specific energy credit
+
+Energy illustrates non-fungibility within what appears to be one physical unit.
+Ten kilowatt-hours generated at noon in a zone with excess solar supply may not
+be interchangeable with ten kilowatt-hours delivered during the evening peak
+in a congested zone. Storage losses, transmission constraints, and scarcity at
+the time and place of redemption can make the two claims operationally
+different even when a model assigns them the same current scalar value.
+
+A position can therefore retain axes such as:
+
+```math
+B_{p,\text{energy type},\text{zone},\text{delivery window}}.
+```
+
+Offers describe where and when energy can currently be supplied, wants describe
+desired consumption, and utility and risk help decide whether to accept an
+energy claim. The balance records what was actually promised after that
+decision. A holder of an off-peak claim cannot demand peak energy merely because
+both positions were once valued at ten scalar credits. Conversion between zones
+or delivery windows must be an explicit, authorized transaction with declared
+rates, losses, capacity constraints, and any required reserve or system
+accounts.
+
+### Counterparty-specific exposure
+
+Net participant balances can also hide the graph of obligations. Consider:
+
+```math
+b_A=+10,\qquad b_D=+10,\qquad b_B=-10,\qquad b_C=-10.
+```
+
+These balances could mean that $B$ owes $A$ and $C$ owes $D$, or that $C$ owes
+$A$ and $B$ owes $D$. The net scalar state is identical, but the default outcome
+differs when creditors have recourse to particular debtors, guarantees cover
+particular edges, or losses are not fully mutualized.
+
+Let a non-negative edge position be:
+
+```math
+E_{p q d}(t) \geq 0,
+```
+
+where debtor $q$ owes creditor $p$ a claim of type $d$. A typed net position is
+then derived as:
+
+```math
+B_{p d}(t)
+=
+\sum_{q\in P} E_{p q d}(t)
+-
+\sum_{q\in P} E_{q p d}(t).
+```
+
+Risk may estimate the likelihood and consequence of each debtor's default, but
+the authoritative edge state determines who has a claim and who absorbs a loss.
+Retaining these edges changes the economic meaning of the system: it is a
+network of bilateral or transferable IOUs unless policy explicitly novates and
+mutualizes the obligations. When all defaults are genuinely borne by the
+network under one rule, counterparty provenance may be irrelevant to settlement
+and should remain in history and risk rather than in the balance.
+
+### Weather-contingent credit
+
+Weather belongs in a credit balance only when it changes an agreed settlement
+payoff. If rain merely affects a farmer's present capacity or probability of
+repayment, it should change the farmer's offer, constraint, credit limit, or
+risk estimate instead.
+
+Suppose a mechanic repairs a farmer's tractor now. They authorize terms under
+which the farmer owes produce-basket credits after a normal harvest but owes a
+smaller bundle of labour-hour credits after an independently attested drought.
+The mechanic holds the corresponding positive contingent claims. Before the
+weather outcome is known, their positions have dimensions for both the
+redemption type and the possible state:
+
+```math
+B_{p,d,\omega},
+\qquad
+\omega \in \{\text{normal harvest},\text{drought}\}.
+```
+
+Utility determines whether each party prefers this risk-sharing arrangement,
+and risk estimates the probability and reliability of each branch. Neither
+function specifies the enforceable payoff. The signed proposal and ledger
+position do. When an agreed oracle or adjudication process resolves the weather
+state, the ledger projects the position onto the realized branch and expires
+the alternatives according to the authorized terms. Every contingent
+coordinate must contain matched positive and negative entries before
+resolution; otherwise the tensor notation would conceal unbacked credit.
+
+### Generalized non-scalar mutual credit
+
+Let $\mathcal D$ be a policy-defined set of claim types, $\mathcal T$ a set of
+maturity or delivery buckets, and $\Omega$ a set of objectively resolvable
+contingencies. A participant's authoritative position can be represented as:
+
+```math
+B(t) \in
+\mathbb{R}^{|P|\times|\mathcal D|\times|\mathcal T|\times|\Omega|},
+```
+
+with $B_{p d \tau \omega}(t)>0$ meaning that the network owes $p$ that typed,
+dated, contingent claim and $B_{p d \tau \omega}(t)<0$ meaning that $p$ owes
+it to the network. A valid transition is additive and conserves every
+coordinate:
+
+```math
+B_{p d \tau \omega}(t+1)
+=B_{p d \tau \omega}(t)+\Delta B_{p d \tau \omega}(Q),
+
+\qquad
+\sum_{p\in P}\Delta B_{p d \tau \omega}(Q)=0
+\quad
+\text{for every }(d,\tau,\omega).
+```
+
+Separate claim types are therefore a product of separately conserved ledgers,
+consistent with the rule that balances denominated in different units cannot
+simply be added. Cross-coordinate conversion requires an authorized exchange
+or a policy-defined transformation that records its rates, rounding, losses,
+and backing accounts. A participant may simultaneously hold positive and
+negative coordinates; there is no total ordering in which every tensor is
+simply greater than, equal to, or less than zero.
+
+Scalar debt and positive-balance bounds must likewise become a typed admissible
+region. If reservations have the same shape as balances, feasibility can be
+written abstractly as:
+
+```math
+B_p(t)+\Delta B_p(Q)-\rho_p(t) \in \mathcal K_p(t),
+```
+
+where $\mathcal K_p(t)$ encodes component limits, aggregate exposure limits,
+prohibited combinations, maturity concentration, and contingency policy. Exit,
+default allocation, and novation must operate on the complete position rather
+than on a scalar projection.
+
+When counterparty provenance is legally material, the fuller sparse obligation
+tensor is:
+
+```math
+E_{p q d \tau \omega}(t),
+```
+
+and $B$ is obtained by netting its incoming and outgoing edges. An
+implementation would normally store sparse, signed credit lots and derive these
+tensor views rather than allocate a dense array.
+
+The coordinates of $B$ or $E$ must be canonical, interpretable, and stable
+under the ledger's policy version. They are not learned embeddings. A learned
+relationship representation may help price a claim, retrieve a counterparty,
+or estimate $U$ and $R$, but retraining a model must never change what an
+existing balance means. The additional dimensions are justified only by
+settlement semantics that a participant can inspect and authorize.
 
 ## Proposed exchange flow
 
@@ -883,10 +1121,29 @@ Add credit only after clearing, authorization, and settlement are stable:
     Theory of Value: The False Coin of Our Own Dreams* (2001) develops related
     arguments about value and exchange.
 
+[^marx-capital]: Karl Marx, [*Capital*, Volume I, Chapter 1, sections 1 and
+    2](https://www.marxists.org/archive/marx/works/1867-c1/ch01.htm) (1867), on
+    socially necessary labour time, concrete and abstract labour, and the
+    reduction of skilled labour to multiples of simple labour.
+
+[^marx-gotha]: Karl Marx, [*Critique of the Gotha Programme*, Part
+    I](https://www.marxists.org/archive/marx/works/1875/gotha/ch01.htm) (1875),
+    on labour certificates, deductions from the social product, equal right,
+    and inequality in the first phase of communist society.
+
+[^heterogeneous-labour]: Samuel Bowles and Herbert Gintis, ["The Marxian
+    Theory of Value and Heterogeneous Labour: A Critique and
+    Reformulation"](https://doi.org/10.1093/oxfordjournals.cje.a035357),
+    *Cambridge Journal of Economics* 1, no. 2 (1977): 173--192.
+
+[^unequal-time]: Patrick C. Shih, Victoria Bellotti, Kyungsik Han, and John M.
+    Carroll, ["Unequal Time for Unequal Value: Implications of Differing
+    Motivations for Participation in
+    Timebanking"](https://doi.org/10.1145/2702123.2702560), *Proceedings of CHI
+    2015* (2015): 1075--1084.
+
 [^ezkl]: [EZKL documentation](https://docs.ezkl.xyz/) and [proof-verification
     lifecycle](https://docs.ezkl.xyz/getting-started/verify/).
-
-[^ezkl-security]: [EZKL security notes](https://docs.ezkl.xyz/security/).
 
 [^prime-match]: Antigoni Polychroniadou et al., ["Prime Match: A
     Privacy-Preserving Inventory Matching
@@ -983,6 +1240,13 @@ The model uses the following conventions:
 | $b_p(t)$ | Credit balance of $p$ at time $t$; positive means the network owes $p$, negative means $p$ owes the network. |
 | $b(t)$ | Vector of all participant balances at time $t$. |
 | $\Delta b_p(Q)$ | Net balance change proposed for $p$ by $Q$. |
+| $\mathcal D$ | Policy-defined set of non-scalar credit claim types. |
+| $\mathcal T$ | Policy-defined set of maturity or delivery buckets for non-scalar credit. |
+| $\Omega$ | Policy-defined set of objectively resolvable contingencies. |
+| $B_{p d \tau \omega}(t)$ | Typed, dated, and contingent net credit position of participant $p$. |
+| $E_{p q d \tau \omega}(t)$ | Gross obligation on which $p$ is creditor, $q$ is debtor, and the remaining indices define the claim. |
+| $\Delta B_{p d \tau \omega}(Q)$ | Change to one coordinate of a non-scalar credit position proposed by $Q$. |
+| $\mathcal K_p(t)$ | Admissible region for $p$'s complete non-scalar credit position. |
 | $\ell_p(t)$ | Maximum permitted debt magnitude for $p$. |
 | $\ell(t)$ | Vector of participant debt limits. |
 | $u_p(t)$ | Optional positive-balance limit for $p$. |
