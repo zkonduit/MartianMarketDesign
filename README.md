@@ -113,9 +113,51 @@ $$
 
 where $c$ records relevant context and $t$ time.
 Other projections describe energy, repair, or estimated USD value. Projection value require calibration with a reference dataset.
-Such projections can be obtained through an autoencoder.
+An autoencoder can learn a compact representation of exchanges, while supervised projection heads calibrate selected meanings against reference data. The following is a proposed experimental specification, rather than an established monetary mechanism.
 
-// TODO insert autoencoder specification and how the vector money could correspond to a USD value eg by learning through Amazon market data
+#### High-level autoencoder specification
+
+**Inputs and representation.** Represent each completed exchange by a feature vector $x_i$: the good or service description, quantity and unit, condition, location, time, and available provenance or resource-use measurements. Normalize numeric fields and encode text and categories; record missing measurements explicitly. Keep the original exchange records for audit and disputes. A compact embedding is a lossy summary of these records.
+
+An encoder and decoder learn
+
+$$
+z_i=f_\theta(x_i)\in\mathbb{R}^{d},\qquad
+\hat{x}_i=g_\phi(z_i).
+$$
+
+A first prototype could use a small multilayer perceptron with a 32-dimensional bottleneck, comparing smaller and larger bottlenecks on held-out data. The decoder reconstructs structured fields and input text embeddings. Reconstruction encourages the latent representation to preserve useful information, following the autoencoder approach of [Hinton and Salakhutdinov (2006)](https://www.cs.toronto.edu/~rsalakhu/papers/science_som.pdf).
+
+**Training and meaningful projections.** Add supervised heads for observed USD prices, energy use, emissions, or other agreed measurements. A possible joint objective is
+
+$$
+\mathcal{L}=\lambda_{\mathrm{rec}}\mathcal{L}_{\mathrm{rec}}(x_i,\hat{x}_i)
++\sum_{k\in K_i}\lambda_k\ell_k(h_k(z_i;c_i,t_i),y_{ik})
++\lambda_{\mathrm{reg}}\lVert z_i\rVert_2^2,
+$$
+
+where $K_i$ contains only the labels available for exchange $i$. Use reconstruction losses suited to each field and regression losses for measured quantities; choose weights using validation data. Linear heads $h_k(z;c,t)=w_k(c,t)^\top z$ support the projection notation above. Environmental measurements and community judgments need separate labels and documented definitions. Unsupervised reconstruction alone does not identify an ethical or climate axis; [Locatello et al. (2019)](https://proceedings.mlr.press/v97/locatello19a.html) explain limits of learning disentangled factors without additional assumptions or supervision.
+
+**From exchange embeddings to balances.** As an initial accounting convention, encode a unit good or service and propose a payment $v_i=q_i z_i$, with quantity $q_i$ expressed in its recorded unit. Participants must agree to that payment; an embedding is not itself an issuance or acceptance rule. Transfer it through
+
+$$
+b_{\mathrm{buyer}}'=b_{\mathrm{buyer}}-v_i,\qquad
+b_{\mathrm{seller}}'=b_{\mathrm{seller}}+v_i.
+$$
+
+This conserves the total balance vector for a transfer; issuance, credit limits, and defaults require separate rules. Scaling and adding embeddings is a design assumption to test: reconstruction training does not ensure that latent arithmetic describes economically equivalent bundles. Evaluate bundle consistency explicitly. Decode individual exchange embeddings for inspection; decoding an accumulated balance need not yield a valid basket. Freeze and version the encoder and projection heads during each accounting period, and require an explicit migration rule before changing the coordinate system of existing balances.
+
+**A USD reference.** An initial calibration dataset could be [Amazon Reviews 2023 item metadata](https://amazon-reviews-2023.github.io/main.html), which includes product descriptions, categories, and USD prices at crawl time. Filter missing or invalid prices, standardize package quantities where possible, and keep price out of encoder inputs when evaluating price prediction. Fit a USD head to unit-price labels, splitting by product family to reduce leakage. Evaluate on newer price observations when available; review timestamps do not establish historical prices.
+
+For additive accounting, fit a linear USD head in dollar units and define
+
+$$
+\widehat{V}_{\mathrm{USD}}(b;c,t)=w_{\mathrm{USD}}(c,t)^\top b.
+$$
+
+At fixed context and time this makes the estimated value of a sum equal the sum of its estimated values. A nonlinear or log-price head may improve product-price prediction, but does not provide this additive balance valuation. The projection is an Earth retail reference estimate: Amazon prices do not establish transaction prices, service values, Martian scarcity, shipping costs, or a redeemable USD exchange rate. Local completed exchanges and explicit Earth-to-Mars cost assumptions would be needed for further calibration.
+
+**Evaluation.** Compare reconstruction and price error against simple category-median and direct price-regression baselines. Hold out product families and, where possible, later observations. Check errors by category, missing-data robustness, bundle consistency, and stability across model versions. Report uncertainty on held-out data and flag unsupported goods, services, and balance combinations. These tests assess the representation and its projections; a separate settlement simulation must test whether participants accept the vectors and whether exchange activity improves.
 
 To maximize the utility of the Martian settlement, an optimizer can search over offer and wants and payment vectors satisfying
 inventories, availability, deadlines, acceptance conditions, and agreed limits on resulting positions. 
@@ -130,6 +172,8 @@ Physical deliveries, disputed quality, transaction risk, and consent can be enco
 - Can disputes be minimized?
 
 ## References 
+- [Hinton and Salakhutdinov, 2006](https://www.cs.toronto.edu/~rsalakhu/papers/science_som.pdf): autoencoders for nonlinear dimensionality reduction.
+- [Amazon Reviews 2023](https://amazon-reviews-2023.github.io/main.html): product metadata and crawl-time USD prices for an initial Earth retail reference.
 - [IPCC, AR6 Synthesis Report](https://report.ipcc.ch/ar6syr/headline.html): climate risks, vulnerability, and adaptation limits.
 - [NASA, MOXIE mission logistics](https://www.nasa.gov/podcasts/small-steps-giant-leaps/small-steps-giant-leaps-episode-71-mars-oxygen-in-situ-resource-utilization-experiment/): launch opportunities and infrastructure preceding crews.
 - [NASA, Martian dust storms](https://www.nasa.gov/solar-system/the-fact-and-fiction-of-martian-dust-storms/): atmospheric and operational constraints.
